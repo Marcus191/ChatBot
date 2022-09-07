@@ -1,0 +1,38 @@
+#from chatterbot import ChatBot
+#from chatterbot.trainers import ListTrainer
+
+from chatterbot import ChatBot
+from chatterbot.trainers import ListTrainer
+#from spacy.lang.it import Italian
+
+# Uncomment the following lines to enable verbose logging
+import logging
+logging.basicConfig(level=logging.INFO)
+
+# Crea una nuova istanza ChatBot
+bot = ChatBot(
+    'HAL',
+    storage_adapter='chatterbot.storage.SQLStorageAdapter',
+    logic_adapters=[
+        #'chatterbot.logic.MathematicalEvaluation',
+        #'chatterbot.logic.TimeLogicAdapter',
+        'chatterbot.logic.BestMatch'
+    ],
+    database_uri='sqlite:///database.db'
+)
+
+#print('Type something to begin...')
+with open("Hal_conversazione.txt") as f:
+    conversation = f.readlines()
+    trainer = ListTrainer(bot)
+    trainer.train(conversation)
+
+while True:
+    try:
+        user_input = input("Tu: ")
+        bot_response = bot.get_response(user_input)
+        print("HAL: ", bot_response)
+    # Premi ctrl-c o ctrl-d sulla tastiera per uscire
+    except (KeyboardInterrupt, EOFError, SystemExit):
+        print("Addio!")
+        break
